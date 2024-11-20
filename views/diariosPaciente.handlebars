@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diários do Paciente</title>
+    <!-- CDN do Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <nav class="bg-white border-gray-200">
+        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+            <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
+                <img src="/img/logo.png" class="h-36" alt="Logo" />
+            </a>
+            <button data-collapse-toggle="navbar-dropdown" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-dropdown" aria-expanded="false">
+                <span class="sr-only">Open main menu</span>
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
+                </svg>
+            </button>
+            <div class="hidden w-full md:block md:w-auto" id="navbar-dropdown">
+                <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+                    <li>
+                        <a href="/homePsi" class="text-pink-600 font-bold border-2 border-pink-600 rounded px-6 py-2 hover:text-white hover:bg-pink-600">Home</a>
+                    </li>
+                    <li>
+                        <a href="/logout" class="text-pink-600 font-bold border-2 border-pink-600 rounded px-6 py-2 hover:text-white hover:bg-pink-600">Sair</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo principal -->
+    <main class="py-20 flex-grow bg-pink-100">
+        <div class="flex flex-col items-center justify-center px-6 mx-auto lg:py-0">
+            <h1 class="text-xl font-bold leading-tight tracking-tight text-pink-600 md:text-2xl text-center flex items-center justify-center space-x-2">
+                Diários de {{nomePaciente}}
+            </h1>
+
+            <div class="grid md:grid-cols-3 grid-cols-1 gap-4 text-left mt-8">
+                {{#each diariossData}}
+                    <div>
+                        <div class="w-full bg-white rounded-lg shadow">
+                            <div class="p-6 space-y-4 md:space-y-6 sm:p-8 text-center">
+                                <!-- Data do registro -->
+                                <h1
+                                    class="text-xl font-bold leading-tight tracking-tight text-pink-600 md:text-xl text-center flex items-center justify-center space-x-2">
+                                    Registro de {{this.data}}
+                                </h1>
+                                <hr class="border-1 border-pink-400">
+
+                                <!-- Detalhes do diário -->
+                                <div class="grid grid-rows-3 grid-flow-col gap-4 text-left">
+                                    <div>
+                                        <p><strong>Cor:</strong> {{this.cor}}</p>
+                                    </div>
+                                    <div>
+                                        <p><strong>Motivo:</strong> {{this.motivo}}</p>
+                                    </div>
+                                    <div>
+                                        <p><strong>Avaliação:</strong> {{this.avaliacao}}</p>
+                                    </div>
+                                </div>
+                                <hr class="border-1 border-pink-400">
+                            </div>
+                        </div>
+                    </div>
+                    {{else}}
+                    <!-- Mensagem de vazio -->
+                    <div class="col-span-3 text-center text-gray-500">
+                        Nenhum diário encontrado para este paciente.
+                    </div>
+                {{/each}}
+            </div>
+        </div>
+
+
+        <!-- Exibição dos feedbacks -->
+        <div class="flex flex-col items-center justify-center px-6 mt-20 mx-auto lg:py-0">
+            <h1 class="text-xl font-bold leading-tight tracking-tight text-pink-600 md:text-2xl text-center flex items-center justify-center space-x-2">
+                Seus Feedbacks
+            </h1>
+            <div class="grid md:grid-cols-3 grid-cols-1 gap-4 text-left">
+                <!-- Loop pelos feedbacks -->
+                {{#each feedbacksData}}
+                    <div>
+                        <div class="w-full bg-white rounded-lg shadow mt-8 sm:max-w-md xl:p-0">
+                            <div class="p-6 space-y-4 md:space-y-6 sm:p-8 text-center">
+                                <h1 class="text-xl font-bold leading-tight tracking-tight text-pink-600 md:text-xl text-center flex items-center justify-center space-x-2">
+                                    Feedback de {{this.data}}
+                                </h1>
+                                <hr class="border-1 border-pink-400">
+                                <div class="grid grid-rows-3 grid-flow-col gap-4 text-left">
+                                    <div>
+                                        <p>{{this.feedback}}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Botões de Ação -->
+                                <div class="flex justify-center gap-8 space-x-4">
+                                    <!-- Botão Editar -->
+                                    <button type="button" onclick="openEditForm('{{this.id}}', '{{this.feedback}}', '{{this.data}}')" class="w-12 text-white bg-pink-600 hover:bg-primary-700 font-medium rounded-lg text-sm">
+                                        <div class="p-2 flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M15.232 3.293a1 1 0 011.414 0l3.06 3.06a1 1 0 010 1.415l-10.06 10.06a1 1 0 01-.548.274l-4 1a1 1 0 01-1.216-1.216l1-4a1 1 0 01.274-.548l10.06-10.06zM5 18l3.293-.793L17 8.5l-2.5-2.5L5.793 15H5v3z" />
+                                            </svg>
+                                        </div>
+                                    </button>
+
+                                    <!-- Botão Excluir -->
+                                    <form action="/excluirFeedback/{{../patientId}}/{{this.id}}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir?')">
+                                        <button type="submit" class="w-12 text-white bg-pink-600 hover:bg-primary-700 font-medium rounded-lg text-sm">
+                                            <div class="p-2 flex items-center justify-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M6 6V4a1 1 0 011-1h10a1 1 0 011 1v2h5v2h-2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V8H1V6h5zm2 0h8V5H8v1zm1 3a1 1 0 011 1v9a1 1 0 01-2 0V10a1 1 0 011-1zm6 0a1 1 0 011 1v9a1 1 0 01-2 0V10a1 1 0 011-1z" />
+                                                </svg>
+                                            </div>
+                                        </button>
+                                    </form>
+                                </div>
+                                <hr class="border-1 border-pink-400">
+                            </div>
+                        </div>
+                    </div>
+                {{/each}}
+            </div>
+            <br><br>
+            <!-- Formulário para adicionar ou editar feedback -->
+            <div class="w-full bg-white rounded-lg shadow mt-8 sm:max-w-md p-6">
+                <h1 class="text-xl font-bold leading-tight tracking-tight text-pink-600 md:text-xl text-center flex items-center justify-center space-x-2">
+                    Seu Feedback
+                </h1>
+                <br>
+                <hr class="border-1 border-pink-400">
+                <br>
+                <form id="feedbackForm" action="/adicionarFeedback/{{patientId}}" method="POST" class="w-full ">
+                    <input type="hidden" name="feedbackId" id="feedbackId">
+                    <div class="grid grid-flow-col md:grid-cols-1 text-left">
+                        <div class="relative w-full flex justify-center">
+                            <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                                <svg class="w-4 h-4 text-pink-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
+                                </svg>
+                            </div>
+                            <input datepicker type="text" name="data" id="data" datepicker-format="dd/mm/yyyy" class="bg-pink-50 border border-pink-600 text-pink-600 font-bold text-sm focus:ring-pink-500 focus:border-pink-500 block w-full ps-10 p-2.5" placeholder="Selecione a Data" value="{{data}}" required autocomplete="off">
+                        </div>
+                        <br>
+                    </div>    
+                    <br>
+                    <label for="feedback" class="block text-base text-gray-900 font-bold pb-2">Feedback:</label>
+                    <textarea name="feedback" id="feedback" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-pink-50 border border-pink-600 focus:ring-pink-500 focus:border-pink-600" placeholder="Dê o seu feedback para {{nomePaciente}}" required autocomplete="off"></textarea>
+                    <input type="hidden" name="psicologoNome" value="Dra. Marinês Romano">
+                    <button type="submit" class="mt-4 w-full text-white bg-pink-600 hover:bg-pink-700 focus:ring-4 focus:outline-none focus:ring-pink-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                        Enviar Feedback
+                    </button>
+                </form>
+            </div>    
+        </div>
+    </main>
+
+    <!-- Rodapé fixo ao final da página -->
+    <footer class="p-6 bg-pink-600 text-center mt-auto">
+        <p class="text-sm text-stone-50">Copyright &copy; 2024 Days In Colors | Todos os direitos reservados</p>
+    </footer>
+
+    <script>
+        // Função para abrir o formulário de edição
+        function openEditForm(feedbackId, feedbackTexto, feedbackData) {
+            document.getElementById("data").value = feedbackData;
+            document.getElementById("feedback").value = feedbackTexto;
+            document.getElementById("feedbackId").value = feedbackId;
+
+            // Modifica a ação do formulário para editar
+            document.getElementById("feedbackForm").action = `/editarFeedback/{{patientId}}`;
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+</body>
+</html>
