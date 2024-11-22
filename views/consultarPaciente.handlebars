@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Pacientes</title>
+    <!-- CDN do Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <!-- Cabeçalho -->
+    <nav class="bg-white border-gray-200">
+        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+            <a href="#" class="flex items-center space-x-3">
+                <img src="/img/logo.png" class="h-36" alt="Logo" />
+            </a>
+            <button data-collapse-toggle="navbar-dropdown" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">
+                <span class="sr-only">Abrir menu principal</span>
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
+                </svg>
+            </button>
+            <div class="hidden w-full md:block md:w-auto" id="navbar-dropdown">
+                <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 md:flex-row md:mt-0 md:border-0 md:bg-white">
+                    <li>
+                        <a href="/homePsi" class="text-pink-600 font-bold border-2 border-pink-600 rounded px-6 py-2 hover:text-white hover:bg-pink-600">Home</a>
+                    </li>
+                    <li>
+                        <a href="/logout" class="text-pink-600 font-bold border-2 border-pink-600 rounded px-6 py-2 hover:text-white hover:bg-pink-600">Sair</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo principal -->
+    <main class="py-20 flex-grow bg-pink-100">
+        <div class="flex flex-col items-center justify-center mx-auto mx-2 md:px-64 lg:py-0">
+            <div class="w-full bg-white rounded-lg shadow mt-8">
+                <div class="p-6 space-y-4 md:space-y-6 sm:p-8 text-center">
+                    <h1 class="text-xl font-bold leading-tight tracking-tight text-pink-600 md:text-2xl text-center">
+                        Meus Pacientes
+                    </h1>  
+                    <hr class="border-1 border-pink-400">
+                    <!-- Lista de Pacientes -->
+                    <div id="otherPatients">
+                        <!-- Pacientes serão carregados aqui -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="p-6 bg-pink-600 text-center mt-auto">
+        <p class="text-sm text-stone-50">Copyright &copy; 2024 Days In Colors | Todos os direitos reservados</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Renderizar informações do usuário
+        function renderUserInfo(user) {
+            const userInfo = document.getElementById('userInfo');
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('userStatus').textContent = user.status;
+            userInfo.style.display = 'grid'; // Tornar visível após os dados serem carregados
+        }
+
+        // Renderizar pacientes com botões "Ver Diários"
+        function renderOtherPatients(patients) {
+            const otherPatientsContainer = document.getElementById('otherPatients');
+            otherPatientsContainer.innerHTML = ''; // Limpa o conteúdo antes de adicionar
+
+            patients.forEach(patient => {
+                const patientDiv = document.createElement('div');
+                patientDiv.classList.add('mb-6'); // Adicionando mais espaço entre os pacientes
+                patientDiv.innerHTML = `
+                    <div class="grid grid-rows-2 grid-flow-col gap-4 text-left">
+                        <div><strong>Nome:</strong> ${patient.name}</div>
+                        <div><strong>Status:</strong> ${patient.status}</div>
+                    </div>
+                    <button type="button" class="w-48 text-white bg-pink-600 hover:bg-pink-700 focus:ring-4 focus:outline-none focus:ring-pink-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center view-diaries-btn" data-id="${patient.id}">
+                        Ver Diários
+                    </button>
+                    <hr class="border-1 border-pink-400 mt-4">  
+                `;
+                otherPatientsContainer.appendChild(patientDiv);
+            });
+
+            // Adicionar evento de clique nos botões
+            document.querySelectorAll('.view-diaries-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const patientId = e.target.getAttribute('data-id');
+                    if (patientId) {
+                        window.location.href = `/diariosPaciente/${patientId}`;
+                    } else {
+                        console.error("ID do paciente não encontrado!");
+                    }
+                });
+            });
+        }
+
+        // Buscar dados dos usuários e processar
+        function fetchUsers() {
+            fetch('/usuarios')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Dados recebidos:", data);
+
+                    // Verifica se há dados válidos
+                    if (data && data.length > 0) {
+                        const user = data.find(user => user.isMainUser);
+                        if (user) {
+                            renderUserInfo(user);
+                        } else {
+                            console.warn('Usuário principal não encontrado!');
+                        }
+
+                        const otherPatients = data.filter(user => !user.isMainUser);
+                        renderOtherPatients(otherPatients);
+                    } else {
+                        console.warn('Nenhum dado de usuário encontrado.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar usuários:', error);
+                });
+        }
+
+        // Inicializar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchUsers();
+        });
+    </script>
+</body>
+</html>
